@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url= env("DATABASE_URL")
+  directUrl=env("DIRECT_URL")
+}
+
+model User {
+  id         String    @id @default(uuid())
+  clerkUserId String    @unique
+  email      String    @unique
+  name      String?
+  imageUrl  String?
+  transactions Transaction[]
+  accounts   Account[]
+  budgets   Budget[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@map("users")
+}
+
+
+model Account {
+  id          String      @id @default(uuid())
+  name        String
+  type        AccountType
+  balance     Decimal       @default(0)
+  isDefault   Boolean     @default(false)
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+ enum AccountType {
+  CHECKING
+  SAVINGS
+}
+
+model Transaction {
+  id          String      @id @default(uuid())
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  account     Account     @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId   String
+  type       TransactionType
+  amount      Decimal
+  category    String
+  description String
+  date       DateTime
+  receiptUrl  String?
+  isRecurring Boolean     @default(false)
+  recurrenceInterval  RecurrenceInterval? 
+  nextRecurringDate DateTime?
+  lastProcessed DateTime?
+  status     TransactionStatus @default(COMPLETED)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+
+  @@index([userId])
+  @@index([accountId])
+  @@map("transactions")
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+enum RecurrenceInterval {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+model Budget {
+  id          String      @id @default(uuid())
+  user        User        @relation(fields: [userId], references: [id])
+  userId      String
+  amount      Decimal
+  lastAlertSent DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId])
+  @@map("budgets")
+}
