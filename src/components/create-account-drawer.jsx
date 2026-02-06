@@ -166,7 +166,7 @@ const CreateAccountDrawer = ({ children }) => {
                     Creating ....
                   </>
                 ) : (
-                  "Create Account"
+                  "Create Account."
                 )}
               </Button>
             </div>
