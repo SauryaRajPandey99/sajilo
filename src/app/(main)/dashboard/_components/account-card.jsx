@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Switch } from "../../../../components/ui/switch";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 
 const AccountCard = ({ account }) => {
   const { name, type, balance, id, isDefault } = account;
@@ -28,8 +29,12 @@ const AccountCard = ({ account }) => {
         </p>
       </CardContent>
       <CardFooter>
-        <div className="flex item-center"></div>
-        <div className="flex item-center"></div>
+        <div className="flex item-center">
+          <ArrowUpRight className="mr-1 h-4 w-4 text-green-500" />
+        </div>
+        <div className="flex item-center">
+          <ArrowDownRight className="mr-1 h-4 w-4 text-red-500" />
+        </div>
       </CardFooter>
     </Card>
   );
