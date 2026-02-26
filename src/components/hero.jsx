@@ -36,7 +36,7 @@ const HeroSection = () => {
 
   return (
     <>
-      <style
+      {/* <style
         dangerouslySetInnerHTML={{
           __html: `
         @keyframes float {
@@ -49,7 +49,7 @@ const HeroSection = () => {
         }
       `,
         }}
-      />
+      /> */}
 
       <div className="relative min-h-screen flex flex-col justify-center overflow-hidden -mt-20 pt-20">
         {/* Animated background gradient */}
@@ -161,31 +161,6 @@ const HeroSection = () => {
 
                 {/* Overlay gradient */}
                 <div className="absolute inset-0 bg-linear-to-t from-black/10 to-transparent" />
-              </div>
-
-              {/* Floating cards decoration */}
-              <div
-                className="absolute -top-8 -left-8 w-32 h-32 bg-lime-500/10 rounded-2xl backdrop-blur-sm border border-lime-500/20 p-4 hidden lg:block animate-in fade-in zoom-in duration-1000 delay-700"
-                style={{
-                  animation: "float 3s ease-in-out infinite",
-                }}
-              >
-                <TrendingUp className="w-8 h-8 text-lime-600" />
-                <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mt-2">
-                  Track Growth
-                </p>
-              </div>
-
-              <div
-                className="absolute -bottom-8 -right-8 w-32 h-32 bg-green-500/10 rounded-2xl backdrop-blur-sm border border-green-500/20 p-4 hidden lg:block animate-in fade-in zoom-in duration-1000 delay-1000"
-                style={{
-                  animation: "float 3s ease-in-out infinite 1.5s",
-                }}
-              >
-                <Target className="w-8 h-8 text-green-600" />
-                <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mt-2">
-                  Hit Goals
-                </p>
               </div>
             </div>
           </div>

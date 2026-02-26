@@ -1,6 +1,9 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { getAccountWithTransactions } from "../../../../../actions/accounts";
 import { notFound } from "next/navigation";
+import TransactionTable from "../_components/transaction-tables";
+import { BarLoader } from "react-spinners";
+import AccountChart from "../_components/account-chart";
 
 const AccountsPage = async ({ params }) => {
   const { id } = await params;
@@ -13,17 +16,45 @@ const AccountsPage = async ({ params }) => {
   const { transactions, ...account } = accountData;
 
   return (
-    <div>
-      <div>
-        <h1>{account.name}</h1>
-        <p>
-          {account.type.charAt(0) + account.type.slice(1).toLowerCase()} Account
-        </p>
+    <div className="space-y-8 px-5">
+      <div className="flex gap-4 items-end justify-between">
+        <div>
+          <h1 className="text-5xl sm:text-6xl font-bold capitalize bg-linear-to-r from-teal-600 to-green-800  bg-clip-text text-transparent">
+            {account.name}
+          </h1>
+          <p className="text-muted-foreground">
+            {account.type.charAt(0) + account.type.slice(1).toLowerCase()}{" "}
+            Account
+          </p>
+        </div>
+        <div>
+          <div className="text-right pb-2">
+            {" "}
+            <div className="text-xl sm:text-2xl font-bold">
+              ${parseFloat(account.balance).toFixed(2)}
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {account._count.transactions}Transactions
+          </p>
+        </div>
       </div>
-      <div>
-        <div> ${parseFloat(account.balance).toFixed(2)}</div>
-        <p>{account._count.transactions}Transactions</p>
-      </div>
+
+      <Suspense
+        fallback={
+          <BarLoader className="mt-4" width={"100%"} color={"#9333ea"} />
+        }
+      >
+        <AccountChart transactions={transactions} />
+      </Suspense>
+      {/* transaction table */}
+      <Suspense
+        fallback={
+          <BarLoader className="mt-4" width={"100%"} color={"#9333ea"} />
+        }
+      >
+        <TransactionTable transactions={transactions} />
+      </Suspense>
     </div>
   );
 };
