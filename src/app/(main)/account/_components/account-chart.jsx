@@ -120,16 +120,21 @@ const AccountChart = ({ transactions }) => {
               responsive
               data={filteredData}
               margin={{
-                top: 5,
-                right: 0,
-                left: 0,
-                bottom: 5,
+                top: 10,
+                right: 10,
+                left: 10,
+                bottom: 0,
               }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid strokeDasharray="3 3 " vertical={false} />
               <XAxis dataKey="date" />
-              <YAxis width={60} />
-              <Tooltip />
+              <YAxis
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => `$${value}`}
+              />
+              <Tooltip tickFormatter={(value) => [`$${value}`, undefined]} />
               <Legend />
               <Bar
                 dataKey="income"

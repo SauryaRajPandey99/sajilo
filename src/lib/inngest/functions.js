@@ -1,0 +1,73 @@
+import { db } from "../prisma";
+import { inngest } from "./client";
+
+export const checkBudgetAlerts = inngest.createFunction(
+  { name: "Check Budget Alerts" },
+  { cron: "0 */6 * * *" },
+  async ({ step }) => {
+    const budgets = await step.run("fetch-budget", async () => {
+      // Simulate fetching budgets from a database
+      return await db.budget.findMany({
+        include: {
+          user: {
+            include: {
+              accounts: {
+                where: {
+                  isDefault: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    });
+
+    for (const budget of budgets) {
+      const defaultAccount = budget.user.accounts[0];
+      if (!defaultAccount) continue; // Skip if no default account found
+      await step.run(`check-budget-${budget.id}`, async () => {
+        const startDate = new Date();
+        startDate.setDate(1); // Start of the month
+        const expenses = await db.transaction.aggregate({
+          where: {
+            userId: budget.userId,
+            accountId: defaultAccount.id,
+            type: "EXPENSE",
+            date: {
+              gte: startDate,
+            },
+          },
+          _sum: {
+            amount: true,
+          },
+        });
+
+        const totalExpenses = expenses._sum.amount?.toNumber() || 0;
+        const budgetAmount = budget.amount;
+        const percentageUsed = (totalExpenses / budgetAmount) * 100;
+
+        console.log(percentageUsed);
+        if (
+          percentageUsed >= 80 &&
+          (!budget.lastAlertSent ||
+            isNewMonth(new Date(budget.lastAlertSent), new Date()))
+        ) {
+          //sending the email if the budget used is more than 80% and also checking if the alert was sent in the current month or not
+
+          console.log(percentageUsed, budget.lastAlertSent);
+          await db.budget.update({
+            where: { id: budget.id },
+            data: { lastAlertSent: new Date() },
+          });
+        }
+      });
+    }
+  },
+);
+
+function isNewMonth(lastAlertDate, currentDate) {
+  return (
+    lastAlertDate.getMonth() !== currentDate.getMonth() ||
+    lastAlertDate.getFullYear() !== currentDate.getFullYear()
+  );
+}
