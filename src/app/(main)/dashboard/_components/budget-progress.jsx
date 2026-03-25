@@ -14,7 +14,7 @@ import { Check, Pencil, X } from "lucide-react";
 import useFetch from "../../../../../hooks/use-fetch";
 import { updateBudget } from "../../../../../actions/budget";
 import { toast } from "sonner";
-import { Progress } from "../../../../components/ui/progress";
+// import { Progress } from "../../../../components/ui/progress";
 
 const BudgetProgress = ({ initialBudget, currentExpenses }) => {
   const [isEditing, setIsEditing] = useState(false);
