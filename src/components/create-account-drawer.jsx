@@ -6,7 +6,6 @@ import {
   DrawerTrigger,
   DrawerClose,
   DrawerHeader,
-  DrawerFooter,
   DrawerTitle,
 } from "./ui/drawer";
 import { useForm } from "react-hook-form";
@@ -16,7 +15,6 @@ import { Input } from "./ui/input";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -41,7 +39,7 @@ const CreateAccountDrawer = ({ children }) => {
     resolver: zodResolver(accountSchema),
     defaultValues: {
       name: "",
-      type: "CURRENT",
+      type: "CHECKING",
       balance: "",
       isDefault: false,
     },
@@ -104,7 +102,7 @@ const CreateAccountDrawer = ({ children }) => {
                   <SelectValue placeholder="Select Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="CURRENT">Current</SelectItem>
+                  <SelectItem value="CHECKING">Checking</SelectItem>
                   <SelectItem value="SAVINGS">Savings</SelectItem>
                 </SelectContent>
               </Select>
@@ -166,7 +164,7 @@ const CreateAccountDrawer = ({ children }) => {
                     Creating ....
                   </>
                 ) : (
-                  "Create Account"
+                  "Create Account."
                 )}
               </Button>
             </div>

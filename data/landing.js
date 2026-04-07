@@ -44,22 +44,21 @@ export const featuresData = [
   {
     icon: <PieChart className="h-8 w-8 text-lime-600" />,
     title: "Personalized Budgets",
-    description: "Set financial goals and receive custom budget strategies tailored to you",
+    description:
+      "Set financial goals and receive custom budget strategies tailored to you",
   },
   {
     icon: <CreditCard className="h-8 w-8 text-lime-600" />,
     title: "Unified Account Management",
-    description: "Connect all your bank accounts and cards for a complete financial overview",
+    description:
+      "Connect all your bank accounts and cards for a complete financial overview",
   },
-  {
-    icon: <Globe className="h-8 w-8 text-lime-600" />,
-    title: "Global Currency Handling",
-    description: "Track expenses across 150+ currencies with live exchange rates",
-  },
+
   {
     icon: <Zap className="h-8 w-8 text-lime-600" />,
     title: "Smart Notifications",
-    description: "Receive proactive alerts and personalized money-saving suggestions",
+    description:
+      "Receive proactive alerts and personalized money-saving suggestions",
   },
 ];
 
