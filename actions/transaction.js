@@ -12,6 +12,9 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const serializeAmount = (obj) => {
   return { ...obj, amount: obj.amount.toNumber() };
 };
+const serializeAccount = (obj) => {
+  return { ...obj, balance: obj.balance.toNumber() };
+};
 export async function createTransaction(data) {
   try {
     const { userId } = await auth();
@@ -121,7 +124,7 @@ function calculateNextRecurringDate(startDate, interval) {
 export async function scanReceipt(file) {
   try {
     const model = genAI.getGenerativeModel({
-      model: "gemini-3.1-flash-lite-preview",
+      model: "gemini-2.5-flash-lite",
     });
     const arrayBuffer = await file.arrayBuffer();
     const base64String = Buffer.from(arrayBuffer).toString("base64");
@@ -131,7 +134,8 @@ export async function scanReceipt(file) {
       - Date (in ISO format)
       - Description or items purchased (brief summary)
       - Merchant/store name
-      - Suggested category (one of: housing,transportation,groceries,utilities,entertainment,food,shopping,healthcare,education,personal,travel,insurance,gifts,bills,other-expense )
+      - Suggested category (one of: housing,transportation,groceries,utilities,entertainment,food,shopping,healthcare,education,personal,travel,insurance,gifts,bills,other-expense)
+      - Last 4 digits of a card number if visible on the receipt (or null if not present)
       
       Only respond with valid JSON in this exact format:
       {
@@ -139,10 +143,11 @@ export async function scanReceipt(file) {
         "date": "ISO date string",
         "description": "string",
         "merchantName": "string",
-        "category": "string"
+        "category": "string",
+        "cardLastFour": "string or null"
       }
-
-      If its not a recipt, return an empty object`;
+ 
+      If its not a receipt, return an empty object`;
 
     const result = await model.generateContent([
       {
@@ -165,6 +170,7 @@ export async function scanReceipt(file) {
         description: data.description,
         category: data.category,
         merchantName: data.merchantName,
+        cardLastFour: data.cardLastFour ?? null,
       };
     } catch (parseError) {
       console.error("Error parsing JSON response:", parseError);
@@ -172,7 +178,55 @@ export async function scanReceipt(file) {
     }
   } catch (error) {
     console.error("Error scanning receipt:", error.message);
-    throw new Error("Failed to scan receipt ");
+    throw new Error("Failed to scan receipt");
+  }
+}
+export async function createAccountFromCard(cardLastFour) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const user = await db.user.findUnique({
+      where: { clerkUserId: userId },
+    });
+    if (!user) throw new Error("User not found");
+
+    // Check if an account with this card suffix already exists
+    const existing = await db.account.findFirst({
+      where: {
+        userId: user.id,
+        name: { contains: cardLastFour },
+      },
+    });
+
+    if (existing) {
+      return {
+        success: true,
+        data: serializeAccount(existing),
+        created: false,
+      };
+    }
+
+    // No default if other accounts exist
+    const accountCount = await db.account.count({
+      where: { userId: user.id },
+    });
+
+    const newAccount = await db.account.create({
+      data: {
+        name: `Card ••••${cardLastFour}`,
+        type: "CHECKING",
+        balance: 0,
+        isDefault: accountCount === 0,
+        userId: user.id,
+      },
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true, data: serializeAccount(newAccount), created: true };
+  } catch (error) {
+    console.error("Error creating account from card:", error);
+    throw new Error(error.message || "Failed to create account from card");
   }
 }
 

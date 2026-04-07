@@ -174,16 +174,6 @@ const TransactionTable = ({ transactions }) => {
     );
   };
 
-  //   const handleBulkDelete = async () => {
-  //     if (
-  //       !window.confirm(
-  //         `Are you sure you want to delete ${selectedIds.length} transactions?`,
-  //       )
-  //     ) {
-  //       return;
-  //     }
-  //     deleteFn(selectedIds);
-  //   };
   const handleBulkDelete = () => {
     setConfirmOpen(true);
   };
