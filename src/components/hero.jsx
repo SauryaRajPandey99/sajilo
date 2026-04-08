@@ -74,8 +74,6 @@ const HeroSection = () => {
               With Sajilo
             </span>
           </h1>
-          <Link href="/sign-in">Sign In</Link>
-          <Link href="/sign-up">Get Started</Link>
           <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed mb-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150">
             Take control of your finances with intelligent budgeting tools.
             Track every penny, visualize spending patterns, and reach your
