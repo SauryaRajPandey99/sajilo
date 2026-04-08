@@ -91,7 +91,7 @@ export const testimonialsData = [
     role: "Startup Founder",
     image: "https://randomuser.me/api/portraits/men/10.jpg",
     quote:
-      "Welth gives me complete visibility into our company's cash flow. The automated categorization alone saves us 10+ hours weekly.",
+      "Sajilo gives me complete visibility into our company's cash flow. The automated categorization alone saves us 10+ hours weekly.",
   },
   {
     name: "Jessica Wong",
@@ -105,6 +105,6 @@ export const testimonialsData = [
     role: "Real Estate Investor",
     image: "https://randomuser.me/api/portraits/men/54.jpg",
     quote:
-      "Managing multiple properties was chaos before Welth. Now everything is organized, and the reporting features are exceptional.",
+      "Managing multiple properties was chaos before Sajilo. Now everything is organized, and the reporting features are exceptional.",
   },
 ];
