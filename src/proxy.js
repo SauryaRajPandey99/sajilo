@@ -22,12 +22,14 @@ const aj = arcjet({
 });
 
 const clerk = clerkMiddleware(async (auth, req) => {
-  const { userId } = await auth();
-  // if the user is not signed in and is trying to access a protected route, redirect to sign-in page
+  const { userId, redirectToSignIn } = await auth();
+
   if (!userId && isProtectedRoute(req)) {
-    const { redirectToSignIn } = await auth();
-    return redirectToSignIn();
+    return redirectToSignIn({
+      returnBackUrl: req.url,
+    });
   }
+
   return NextResponse.next();
 });
 
@@ -36,7 +38,6 @@ export default createMiddleware(aj, clerk);
 export const config = {
   matcher: [
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-
     "/(api|trpc)(.*)",
   ],
 };

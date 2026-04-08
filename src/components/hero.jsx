@@ -37,6 +37,7 @@ const HeroSection = () => {
   return (
     <div className="relative min-h-screen flex flex-col justify-center overflow-hidden -mt-20 pt-20">
       {/* Background */}
+
       <div className="absolute inset-0 bg-linear-to-br from-white via-lime-50/40 to-blue-50/50 dark:from-gray-950 dark:via-gray-950 dark:to-slate-900">
         <div
           className="absolute inset-0 transition-transform duration-100"
@@ -73,7 +74,8 @@ const HeroSection = () => {
               With Sajilo
             </span>
           </h1>
-
+          <Link href="/sign-in">Sign In</Link>
+          <Link href="/sign-up">Get Started</Link>
           <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed mb-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150">
             Take control of your finances with intelligent budgeting tools.
             Track every penny, visualize spending patterns, and reach your
