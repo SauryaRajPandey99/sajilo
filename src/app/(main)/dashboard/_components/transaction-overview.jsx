@@ -29,22 +29,33 @@ const COLORS = [
   "#f97316", // orange
 ];
 
-const DashboardOverview = ({ accounts, transactions }) => {
+// const DashboardOverview = ({ accounts, transactions }) => {
+//   const [selectedAccountId, setSelectedAccountId] = useState(
+//     accounts.find((a) => a.isDefault)?.id || accounts[0]?.id,
+//   );
+const DashboardOverview = ({ accounts = [], transactions = [] }) => {
   const [selectedAccountId, setSelectedAccountId] = useState(
-    accounts.find((a) => a.isDefault)?.id || accounts[0]?.id,
+    accounts.find((a) => a.isDefault)?.id || accounts[0]?.id || "",
+  );
+  const [selectedChartAccountId, setSelectedChartAccountId] = useState(
+    accounts.find((a) => a.isDefault)?.id || accounts[0]?.id || "",
   );
   const [activeIndex, setActiveIndex] = useState(null);
 
   const accountTransactions = transactions.filter(
     (t) => t.accountId === selectedAccountId,
   );
+  const chartTransactions = transactions.filter(
+    (t) => t.accountId === selectedChartAccountId,
+  );
+  const recentTransactions = [...accountTransactions]
 
-  const recentTransactions = accountTransactions
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, 5);
 
   const currentDate = new Date();
-  const currentMonthExpenses = accountTransactions.filter((t) => {
+  // const currentMonthExpenses = accountTransactions.filter((t) => {
+  const currentMonthExpenses = chartTransactions.filter((t) => {
     const transactionDate = new Date(t.date);
     return (
       t.type === "EXPENSE" &&
@@ -164,18 +175,35 @@ const DashboardOverview = ({ accounts, transactions }) => {
       </Card>
       {/* Expense Breakdown Card */}
       <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base font-normal">
-            Monthly Expense Breakdown
-          </CardTitle>
-          {totalExpenses > 0 && (
-            <p className="text-2xl font-semibold mt-1">
-              ${totalExpenses.toFixed(2)}
-              <span className="text-sm font-normal text-muted-foreground ml-2">
-                this month
-              </span>
-            </p>
-          )}
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <div>
+            <CardTitle className="text-base font-normal">
+              Monthly Expense Breakdown
+            </CardTitle>
+            {totalExpenses > 0 && (
+              <p className="text-2xl font-semibold mt-1">
+                ${totalExpenses.toFixed(2)}
+                <span className="text-sm font-normal text-muted-foreground ml-2">
+                  this month
+                </span>
+              </p>
+            )}
+          </div>
+          <Select
+            value={selectedChartAccountId}
+            onValueChange={setSelectedChartAccountId}
+          >
+            <SelectTrigger className="w-45">
+              <SelectValue placeholder="Select account" />
+            </SelectTrigger>
+            <SelectContent>
+              {accounts.map((account) => (
+                <SelectItem key={account.id} value={account.id}>
+                  {account.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </CardHeader>
         <CardContent className="pb-4">
           {pieChartData.length === 0 ? (

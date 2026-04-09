@@ -20,7 +20,9 @@ import BudgetProgress from "./_components/budget-progress";
 import DashboardOverview from "./_components/transaction-overview";
 
 async function DashboardPage() {
-  const accounts = await getUserAcccounts();
+  // const accounts = await getUserAcccounts();
+  const accounts = (await getUserAcccounts()) ?? [];
+
   const defaultAccount = accounts?.find((account) => account.isDefault);
 
   let budgetData = null;
@@ -28,7 +30,8 @@ async function DashboardPage() {
     budgetData = await getCurrentBudget(defaultAccount.id);
   }
 
-  const transactions = await getDashboardData();
+  // const transactions = await getDashboardData();
+  const transactions = (await getDashboardData()) ?? [];
 
   const totalAccounts = accounts?.length || 0;
   const totalTransactions = transactions?.length || 0;
@@ -146,7 +149,7 @@ async function DashboardPage() {
           <div className="space-y-6 xl:col-span-8">
             {defaultAccount && (
               <section className="relative overflow-hidden rounded-[32px] border border-white/10 bg-background/70 p-2 shadow-[0_14px_60px_rgba(0,0,0,0.08)] backdrop-blur-2xl">
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(132,204,22,0.05),transparent_50%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(132,204,22,0.05),transparent_50%)]" />
                 <div className="relative mb-3 flex items-center justify-between px-4 pt-3">
                   <div>
                     <p className="text-sm font-medium text-foreground">
@@ -170,7 +173,7 @@ async function DashboardPage() {
             )}
 
             <section className="relative overflow-hidden rounded-[32px] border border-white/10 bg-background/70 p-2 shadow-[0_14px_60px_rgba(0,0,0,0.08)] backdrop-blur-2xl">
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(59,130,246,0.05),transparent_55%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(59,130,246,0.05),transparent_55%)]" />
               <div className="relative mb-3 flex items-center justify-between px-4 pt-3">
                 <div>
                   <p className="text-sm font-medium text-foreground">
@@ -194,8 +197,8 @@ async function DashboardPage() {
                 }
               >
                 <DashboardOverview
-                  accounts={accounts}
-                  transactions={transactions || []}
+                  accounts={accounts ?? []}
+                  transactions={transactions ?? []}
                 />
               </Suspense>
             </section>

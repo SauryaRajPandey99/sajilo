@@ -47,31 +47,64 @@ const ReceiptScanner = ({
 
     const { cardLastFour } = scannedData;
 
+    // if (cardLastFour) {
+    //   const existingAccount = accounts.find((acc) =>
+    //     acc.name.includes(cardLastFour),
+    //   );
+
+    //   if (existingAccount) {
+    //     toast.success(`Linked to existing account: ${existingAccount.name}`);
+    //     const resolved = { ...scannedData, accountId: existingAccount.id };
+    //     onScanComplete(resolved);
+    //     if (shouldAutoSubmit.current) {
+    //       shouldAutoSubmit.current = false;
+    //       // small delay so form values are committed before submit fires
+    //       setTimeout(() => onAutoSubmit?.(), 100);
+    //     }
+    //   } else {
+    //     toast.loading(
+    //       `New card ••••${cardLastFour} detected — creating account…`,
+    //       {
+    //         id: "auto-account",
+    //       },
+    //     );
+    //     createAccountFn(cardLastFour);
+    //   }
+    // } else {
+    // no card found — still populate form and auto-submit
+
     if (cardLastFour) {
-      const existingAccount = accounts.find((acc) =>
-        acc.name.includes(cardLastFour),
-      );
+      const cardBrand = scannedData.cardBrand?.trim()?.toLowerCase();
+
+      const existingAccount = accounts.find((acc) => {
+        const accountName = acc.name.toLowerCase();
+
+        const matchesLastFour = accountName.includes(cardLastFour);
+        const matchesBrand = cardBrand ? accountName.includes(cardBrand) : true;
+
+        return matchesLastFour && matchesBrand;
+      });
 
       if (existingAccount) {
         toast.success(`Linked to existing account: ${existingAccount.name}`);
         const resolved = { ...scannedData, accountId: existingAccount.id };
         onScanComplete(resolved);
+
         if (shouldAutoSubmit.current) {
           shouldAutoSubmit.current = false;
-          // small delay so form values are committed before submit fires
           setTimeout(() => onAutoSubmit?.(), 100);
         }
       } else {
         toast.loading(
-          `New card ••••${cardLastFour} detected — creating account…`,
+          `New ${scannedData.cardBrand || "card"} ••••${cardLastFour} detected — creating account…`,
           {
             id: "auto-account",
           },
         );
-        createAccountFn(cardLastFour);
+
+        createAccountFn(cardLastFour, scannedData.cardBrand || null);
       }
     } else {
-      // no card found — still populate form and auto-submit
       onScanComplete(scannedData);
       toast.success("Receipt scanned successfully");
       if (shouldAutoSubmit.current) {

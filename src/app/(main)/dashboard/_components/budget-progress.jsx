@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -7,21 +8,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import { Check, Pencil, X } from "lucide-react";
 import useFetch from "../../../../../hooks/use-fetch";
 import { updateBudget } from "../../../../../actions/budget";
 import { toast } from "sonner";
-// import { Progress } from "../../../../components/ui/progress";
 
-const BudgetProgress = ({ initialBudget, currentExpenses }) => {
+const BudgetProgress = ({ initialBudget, currentExpenses = 0 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newBudget, setNewBudget] = useState(
     initialBudget?.amount?.toString() || "",
   );
-  // const router = useRouter();
+
+  const router = useRouter();
 
   const {
     loading: isLoading,
@@ -36,10 +36,12 @@ const BudgetProgress = ({ initialBudget, currentExpenses }) => {
 
   const handleUpdateBudget = async () => {
     const amount = parseFloat(newBudget);
+
     if (isNaN(amount) || amount <= 0) {
       toast.error("Please enter a valid budget amount.");
       return;
     }
+
     await updateBudgetFn(amount);
   };
 
@@ -47,15 +49,20 @@ const BudgetProgress = ({ initialBudget, currentExpenses }) => {
     if (updatedBudget?.success) {
       setIsEditing(false);
       toast.success("Budget updated successfully!");
-      // router.refresh(); // Refresh the page to fetch the updated budget data
+      router.refresh();
     }
-  }, [updatedBudget]);
+  }, [updatedBudget, router]);
 
   useEffect(() => {
     if (error) {
       toast.error("Failed to update budget. Please try again.");
     }
   }, [error]);
+
+  useEffect(() => {
+    setNewBudget(initialBudget?.amount?.toString() || "");
+  }, [initialBudget]);
+
   const handleCancel = () => {
     setNewBudget(initialBudget?.amount?.toString() || "");
     setIsEditing(false);
@@ -66,7 +73,7 @@ const BudgetProgress = ({ initialBudget, currentExpenses }) => {
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div className="flex-1">
           <CardTitle>Monthly Budget (Default Account)</CardTitle>
-          <div className="flex items-center gap-2 mt-1">
+          <div className="mt-1 flex items-center gap-2">
             {isEditing ? (
               <div className="flex items-center space-x-2">
                 <Input
@@ -99,9 +106,10 @@ const BudgetProgress = ({ initialBudget, currentExpenses }) => {
               <>
                 <CardDescription>
                   {initialBudget
-                    ? `$${currentExpenses.toFixed(2)} of 
-                    $${initialBudget.amount.toFixed(2)} spent`
+                    ? `$${currentExpenses.toFixed(2)} of $${initialBudget.amount.toFixed(2)} spent`
                     : "No budget set"}
+
+                  {console.log()}
                 </CardDescription>
                 <Button
                   variant="ghost"
@@ -116,6 +124,7 @@ const BudgetProgress = ({ initialBudget, currentExpenses }) => {
           </div>
         </div>
       </CardHeader>
+
       <CardContent>
         {initialBudget && (
           <div className="space-y-2">
@@ -131,7 +140,7 @@ const BudgetProgress = ({ initialBudget, currentExpenses }) => {
                 style={{ width: `${Math.min(percentUsed, 100)}%` }}
               />
             </div>
-            <p className="text-xs text-muted-foreground text-right">
+            <p className="text-right text-xs text-muted-foreground">
               {percentUsed.toFixed(1)}% used
             </p>
           </div>

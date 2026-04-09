@@ -38,6 +38,9 @@ const AddTransactionForm = ({
   initialData = null,
 }) => {
   const [accounts, setAccounts] = useState(initialAccounts);
+  const [scannedItems, setScannedItems] = useState(
+    initialData?.receiptItems || [],
+  );
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit");
   const router = useRouter();
@@ -90,15 +93,32 @@ const AddTransactionForm = ({
   const date = watch("date");
   const category = watch("category");
 
+  // const onSubmit = async (data) => {
+  //   const formData = { ...data, amount: parseFloat(data.amount) };
+  //   if (editMode) {
+  //     transactionfn(editId, formData);
+  //   } else {
+  //     transactionfn(formData);
+  //   }
+  // };
   const onSubmit = async (data) => {
-    const formData = { ...data, amount: parseFloat(data.amount) };
+    const formData = {
+      ...data,
+      amount: parseFloat(data.amount),
+      receiptItems: scannedItems,
+    };
+
     if (editMode) {
       transactionfn(editId, formData);
     } else {
       transactionfn(formData);
     }
   };
-
+  useEffect(() => {
+    if (editMode && initialData?.receiptItems) {
+      setScannedItems(initialData.receiptItems);
+    }
+  }, [editMode, initialData]);
   // wire submitRef so ReceiptScanner can trigger submit imperatively
   useEffect(() => {
     submitRef.current = handleSubmit(onSubmit);
@@ -122,10 +142,17 @@ const AddTransactionForm = ({
   const handleScanComplete = (scannedData) => {
     if (!scannedData) return;
 
+    setScannedItems(scannedData.items || []);
+
     setValue("amount", scannedData.amount.toString(), {
       shouldValidate: true,
       shouldDirty: true,
     });
+
+    // setValue("amount", scannedData.amount.toString(), {
+    //   shouldValidate: true,
+    //   shouldDirty: true,
+    // });
     setValue("date", new Date(scannedData.date), {
       shouldValidate: true,
       shouldDirty: true,
@@ -171,15 +198,63 @@ const AddTransactionForm = ({
 
   return (
     <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-      {!editMode && (
-        <ReceiptScanner
-          onScanComplete={handleScanComplete}
-          onAutoSubmit={handleAutoSubmit}
-          accounts={accounts}
-          onAccountCreated={handleAccountCreated}
-        />
+      {/* {!editMode && ( */}
+      <ReceiptScanner
+        onScanComplete={handleScanComplete}
+        // onAutoSubmit={!editMode ? handleAutoSubmit : undefined}
+        accounts={accounts}
+        onAccountCreated={handleAccountCreated}
+      />
+      {/* )} */}
+      {scannedItems.length > 0 && (
+        <div className="rounded-lg border overflow-hidden">
+          <div className="bg-muted px-4 py-2 text-sm font-medium text-muted-foreground">
+            Scanned Items
+          </div>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-muted/50">
+                <th className="text-left px-4 py-2 font-medium">Item</th>
+                <th className="text-center px-4 py-2 font-medium">Qty</th>
+                <th className="text-right px-4 py-2 font-medium">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {scannedItems.map((item, i) => (
+                <tr
+                  key={i}
+                  className="border-b last:border-0 hover:bg-muted/30 transition-colors"
+                >
+                  <td className="px-4 py-2">{item.name}</td>
+                  <td className="px-4 py-2 text-center text-muted-foreground">
+                    {item.quantity ?? 1}
+                  </td>
+                  <td className="px-4 py-2 text-right font-mono">
+                    ${parseFloat(item.price).toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="bg-muted/50 font-medium">
+                <td className="px-4 py-2" colSpan={2}>
+                  Total
+                </td>
+                <td className="px-4 py-2 text-right font-mono">
+                  $
+                  {scannedItems
+                    .reduce(
+                      (sum, item) =>
+                        sum + parseFloat(item.price) * (item.quantity ?? 1),
+                      0,
+                    )
+                    .toFixed(2)}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       )}
-
       {/* Type */}
       <div className="space-y-2">
         <label className="text-sm font-medium">Type</label>
