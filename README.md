@@ -86,12 +86,18 @@ npm install
 Create a `.env` file and configure the following environment variables:
 
 ```env
-DATABASE_URL=
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
-GOOGLE_AI_API_KEY=
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=
+
+# Connect to Supabase via connection pooling
+DATABASE_URL=
+# Direct connection to the database. Used for migrations
+DIRECT_URL=
+ARCJEY_KEY=
+RESEND_API_KEY=
+GEMINI_API_KEY=
 ```
 
 Run the development server:
