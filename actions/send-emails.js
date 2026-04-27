@@ -9,7 +9,7 @@ export async function sendEmail({ to, subject, react }) {
 
     const { data, error } = await resend.emails.send({
       from: "Sajilo <onboarding@resend.dev>",
-      to: "quicktesting83@gmail.com",
+      to: "",
       subject,
       html,
     });
