@@ -89,7 +89,7 @@ export const checkBudgetAlerts = inngest.createFunction(
         ) {
           //sending the email if the budget used is more than 80% and also checking if the alert was sent in the current month or not
 
-          await sendEmail({
+          const emailResult = await sendEmail({
             to: budget.user.email,
 
             subject: `Budget Alert for ${defaultAccount.name}`,
