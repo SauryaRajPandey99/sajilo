@@ -110,6 +110,7 @@ export const checkBudgetAlerts = inngest.createFunction(
               },
             }),
           });
+          console.log("Budget email result:", emailResult);
 
           await db.budget.update({
             where: { id: budget.id },
