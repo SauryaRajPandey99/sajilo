@@ -93,6 +93,8 @@ export const checkBudgetAlerts = inngest.createFunction(
             to: budget.user.email,
 
             subject: `Budget Alert for ${defaultAccount.name}`,
+            // to: "aakanshagautam12@gmail.com",
+            // subject: "Test Email",
 
             react: EmailTemplate({
               userName: budget.user.name,
